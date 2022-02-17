@@ -24,7 +24,7 @@ export default {
     mnemonic: process.env.TEST_MNEMONIC,
   },
   paths: {
-    deploy: "scripts/deploy",
+    deploy: "scripts/localDeploy",
     deployments: "deployments",
   },
   solidity: {

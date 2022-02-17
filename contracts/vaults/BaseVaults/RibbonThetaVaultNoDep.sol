@@ -14,7 +14,7 @@ import {
 import {Vault} from "../../libraries/Vault.sol";
 import {VaultLifecycle} from "../../libraries/VaultLifecycle.sol";
 import {ShareMath} from "../../libraries/ShareMath.sol";
-import {RibbonVault} from "./base/RibbonVault.sol";
+import {RibbonVaultNoDep} from "./base/RibbonVaultNoDep.sol";
 
 /**
  * UPGRADEABILITY: Since we use the upgradeable proxy pattern, we must observe
@@ -22,7 +22,7 @@ import {RibbonVault} from "./base/RibbonVault.sol";
  * Any changes/appends in storage variable needs to happen in RibbonThetaVaultStorage.
  * RibbonThetaVault should not inherit from any other contract aside from RibbonVault, RibbonThetaVaultStorage
  */
-contract RibbonThetaVaultNoDep is RibbonVault, RibbonThetaVaultStorage {
+contract RibbonThetaVaultNoDep is RibbonVaultNoDep, RibbonThetaVaultStorage {
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
     using ShareMath for Vault.DepositReceipt;
@@ -96,7 +96,6 @@ contract RibbonThetaVaultNoDep is RibbonVault, RibbonThetaVaultStorage {
      * @param _premiumDiscount is the vault's discount applied to the premium
      * @param _auctionDuration is the duration of the gnosis auction
      * @param _isUsdcAuction is whether Gnosis auction should be denominated in USDC
-     * @param _swapPath is the path for swapping
      */
     struct InitParams {
         address _owner;
@@ -111,7 +110,6 @@ contract RibbonThetaVaultNoDep is RibbonVault, RibbonThetaVaultStorage {
         uint32 _premiumDiscount;
         uint256 _auctionDuration;
         bool _isUsdcAuction;
-        bytes _swapPath;
     }
 
     /************************************************
@@ -126,8 +124,6 @@ contract RibbonThetaVaultNoDep is RibbonVault, RibbonThetaVaultStorage {
      * @param _gammaController is the contract address for opyn actions
      * @param _marginPool is the contract address for providing collateral to opyn
      * @param _gnosisEasyAuction is the contract address that facilitates gnosis auctions
-     * @param _uniswapRouter is the contract address of UniswapV3 router that handles swaps
-     * @param _uniswapFactory is the contract address of UniswapV3 factory containing
      */
     constructor(
         address _weth,
@@ -135,18 +131,14 @@ contract RibbonThetaVaultNoDep is RibbonVault, RibbonThetaVaultStorage {
         address _oTokenFactory,
         address _gammaController,
         address _marginPool,
-        address _gnosisEasyAuction,
-        address _uniswapRouter,
-        address _uniswapFactory
+        address _gnosisEasyAuction
     )
-        RibbonVault(
+        RibbonVaultNoDep(
             _weth,
             _usdc,
             _gammaController,
             _marginPool,
-            _gnosisEasyAuction,
-            _uniswapRouter,
-            _uniswapFactory
+            _gnosisEasyAuction
         )
     {
         require(_oTokenFactory != address(0), "!_oTokenFactory");
@@ -196,10 +188,6 @@ contract RibbonThetaVaultNoDep is RibbonVault, RibbonThetaVaultStorage {
         auctionDuration = _initParams._auctionDuration;
 
         isUsdcAuction = _initParams._isUsdcAuction;
-        if (_initParams._isUsdcAuction) {
-            require(_checkPath(_initParams._swapPath), "Invalid swapPath");
-            swapPath = _initParams._swapPath;
-        }
     }
 
     /************************************************
@@ -273,20 +261,6 @@ contract RibbonThetaVaultNoDep is RibbonVault, RibbonThetaVaultStorage {
         require(strikePrice > 0, "!strikePrice");
         overriddenStrikePrice = strikePrice;
         lastStrikeOverrideRound = vaultState.round;
-    }
-
-    /**
-     * @notice Sets a new path for swaps
-     * @param newSwapPath is the new path
-     */
-    function setSwapPath(bytes calldata newSwapPath)
-        external
-        onlyOwner
-        nonReentrant
-    {
-        require(isUsdcAuction, "!isUsdcAuction");
-        require(_checkPath(newSwapPath), "Invalid swapPath");
-        swapPath = newSwapPath;
     }
 
     /************************************************
@@ -478,7 +452,5 @@ contract RibbonThetaVaultNoDep is RibbonVault, RibbonThetaVaultStorage {
         require(minAmountOut > 0, "!minAmountOut");
 
         VaultLifecycle.settleAuction(GNOSIS_EASY_AUCTION, optionAuctionID);
-
-        VaultLifecycle.swap(USDC, minAmountOut, UNISWAP_ROUTER, swapPath);
     }
 }
