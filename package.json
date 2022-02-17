@@ -36,6 +36,7 @@
   },
   "scripts": {
     "test": "yarn test:eth && yarn test:avax && yarn test:aurora",
+    "test:nofork": "CHAINID=1337 npx hardhat test test/*.ts test/libraries/*.ts",
     "test:eth": "CHAINID=1 npx hardhat test test/*.ts test/libraries/*.ts",
     "test:avax": "CHAINID=43114 npx hardhat test test/RibbonThetaVault.ts",
     "test:aurora": "CHAINID=1313161554 npx hardhat test test/RibbonThetaVault.ts",

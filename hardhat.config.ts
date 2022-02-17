@@ -14,7 +14,7 @@ import { TEST_URI } from "./scripts/helpers/getDefaultEthersProvider";
 require("dotenv").config();
 
 process.env.TEST_MNEMONIC =
-  "test test test test test test test test test test test junk";
+  "media witness liquid teach demand you flush focus tennis car skill banana";
 
 // Defaults to CHAINID=1 so things will run with mainnet fork if not specified
 const CHAINID = process.env.CHAINID ? Number(process.env.CHAINID) : 1;
@@ -28,25 +28,39 @@ export default {
     deployments: "deployments",
   },
   solidity: {
-    version: "0.8.4",
-    settings: {
-      optimizer: {
-        runs: 200,
-        enabled: true,
+    compilers: [
+      {
+        version: "0.4.18"
       },
-    },
+      {
+        version: "0.4.24"
+      },
+      {
+        version: "0.6.10"
+      },
+      {
+        version: "0.8.4",
+        settings: {
+          optimizer: {
+            runs: 200,
+            enabled: true,
+          },
+        },
+      }
+    ],
   },
   networks: {
     hardhat: {
       accounts: {
-        mnemonic: process.env.TEST_MNEMONIC,
+        private_key: process.env.TESTNET_DEPLOYER_PRIVATE_KEY,
+        balance: "3321000000000000000000000"
       },
       chainId: CHAINID,
-      forking: {
-        url: TEST_URI[CHAINID],
-        blockNumber: BLOCK_NUMBER[CHAINID],
-        gasLimit: 8e6,
-      },
+      // forking: {
+      //   url: TEST_URI[CHAINID],
+      //   blockNumber: BLOCK_NUMBER[CHAINID],
+      //   gasLimit: 8e6,
+      // },
     },
     mainnet: {
       url: process.env.TEST_URI,

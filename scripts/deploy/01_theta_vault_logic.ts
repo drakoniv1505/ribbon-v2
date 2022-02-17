@@ -31,7 +31,8 @@ const main = async ({
     contract: "RibbonThetaVault",
     from: deployer,
     args: [
-      WETH_ADDRESS[chainId],
+      // WETH_ADDRESS[chainId],
+      "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
       USDC_ADDRESS[chainId],
       OTOKEN_FACTORY[chainId],
       GAMMA_CONTROLLER[chainId],
