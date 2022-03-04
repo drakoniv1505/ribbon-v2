@@ -191,6 +191,9 @@ const main = async ({
 
   console.log(`GnosisAuction deployed at: ${gnosisAuction.address}`);
 
+  // == Mock oracles ==
+
+
 };
 main.tags = ["PREREQ_CONTRACTS"];
 

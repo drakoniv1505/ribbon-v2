@@ -164,14 +164,14 @@ contract RibbonThetaVaultNoDep is RibbonVaultNoDep, RibbonThetaVaultStorage {
             _initParams._tokenSymbol,
             _vaultParams
         );
-        require(
-            _initParams._optionsPremiumPricer != address(0),
-            "!_optionsPremiumPricer"
-        );
-        require(
-            _initParams._strikeSelection != address(0),
-            "!_strikeSelection"
-        );
+        // require(
+        //     _initParams._optionsPremiumPricer != address(0),
+        //     "!_optionsPremiumPricer"
+        // );
+        // require(
+        //     _initParams._strikeSelection != address(0),
+        //     "!_strikeSelection"
+        // );
         require(
             _initParams._premiumDiscount > 0 &&
                 _initParams._premiumDiscount <
